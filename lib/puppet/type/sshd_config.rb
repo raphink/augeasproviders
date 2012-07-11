@@ -14,7 +14,7 @@ Puppet::Type.newtype(:sshd_config) do
     desc "Entry value."
   end
 
-  newproperty(:target) do
+  newparam(:target) do
     desc "File target."
   end
 
