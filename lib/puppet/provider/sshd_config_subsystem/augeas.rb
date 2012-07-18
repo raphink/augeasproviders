@@ -34,8 +34,8 @@ Puppet::Type.type(:sshd_config_subsystem).provide(:augeas) do
         name = self.path_label(hpath)
 
         value = aug.get(hpath)
-        entry = {:ensure => :present, :name => name, :value => value}
-        resources << new(entry) if entry[:value]
+        entry = {:ensure => :present, :name => name, :command => value}
+        resources << new(entry) if entry[:command]
       end
       resources
     ensure
@@ -72,7 +72,7 @@ Puppet::Type.type(:sshd_config_subsystem).provide(:augeas) do
         aug.insert("#{path}/Match[1]", "Subsystem", true)
         aug.clear("#{path}/Subsystem[last()]/#{key}")
       end
-      aug.set(entry_path, resource[:value])
+      aug.set(entry_path, resource[:command])
       aug.save!
     ensure
       aug.close if aug
@@ -96,7 +96,7 @@ Puppet::Type.type(:sshd_config_subsystem).provide(:augeas) do
     self.class.file(resource)
   end
 
-  def value
+  def command
     aug = nil
     path = "/files#{self.class.file(resource)}"
     begin
@@ -108,7 +108,7 @@ Puppet::Type.type(:sshd_config_subsystem).provide(:augeas) do
     end
   end
 
-  def value=(value)
+  def command=(value)
     aug = nil
     path = "/files#{self.class.file(resource)}"
     begin
