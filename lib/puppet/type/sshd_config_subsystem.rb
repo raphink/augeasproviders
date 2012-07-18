@@ -1,4 +1,4 @@
-# Manages settings in OpenSSH's sshd_config file
+# Manages Subsystem settings in OpenSSH's sshd_config file
 #
 # Copyright (c) 2012 Raphaël Pinson
 # Licensed under the Apache License, Version 2.0
@@ -9,12 +9,12 @@ Puppet::Type.newtype(:sshd_config_subsystem) do
   ensurable
 
   newparam(:name) do
-    desc "The name of the setting, or a unique string if `condition` given."
+    desc "The name of the subsystem to set."
     isnamevar
   end
 
-  newproperty(:value) do
-    desc "Value to change the setting to."
+  newproperty(:command) do
+    desc "The command to execute upon subsystem request."
   end
 
   newparam(:target) do

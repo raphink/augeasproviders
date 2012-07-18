@@ -12,7 +12,7 @@ describe provider_class do
     it "should create simple new entry" do
       apply!(Puppet::Type.type(:sshd_config_subsystem).new(
         :name     => "sftp",
-        :value    => "/usr/lib/openssh/sftp-server",
+        :command  => "/usr/lib/openssh/sftp-server",
         :target   => target,
         :provider => "augeas"
       ))
@@ -31,21 +31,22 @@ describe provider_class do
       provider_class.stubs(:file).returns(target)
       inst = provider_class.instances.map { |p|
         {
-          :name => p.get(:name),
-          :ensure => p.get(:ensure),
-          :value => p.get(:value),
+          :name    => p.get(:name),
+          :ensure  => p.get(:ensure),
+          :command => p.get(:command),
         }
       }
 
       inst.size.should == 1
-      inst[0].should == {:name=>"sftp", :ensure=>:present, :value=>"/usr/libexec/openssh/sftp-server"}
+      inst[0].should == {:name=>"sftp", :ensure=>:present,
+	                 :command=>"/usr/libexec/openssh/sftp-server"}
     end
 
     describe "when creating settings" do
       it "should add it before Match block" do
         apply!(Puppet::Type.type(:sshd_config_subsystem).new(
           :name     => "mysub",
-          :value    => "/bin/bash",
+          :command  => "/bin/bash",
           :target   => target,
           :provider => "augeas"
         ))
@@ -80,7 +81,7 @@ describe provider_class do
       it "should replace a setting" do
         apply!(Puppet::Type.type(:sshd_config_subsystem).new(
           :name     => "sftp",
-          :value    => "/bin/bash",
+          :command  => "/bin/bash",
           :target   => target,
           :provider => "augeas"
         ))
@@ -99,7 +100,7 @@ describe provider_class do
     it "should fail to load" do
       txn = apply(Puppet::Type.type(:sshd_config_subsystem).new(
         :name     => "sftp",
-        :value    => "/bin/bash",
+        :command  => "/bin/bash",
         :target   => target,
         :provider => "augeas"
       ))
