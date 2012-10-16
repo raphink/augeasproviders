@@ -55,4 +55,8 @@ Puppet::Type.newtype(:syslog) do
     desc "The file in which to store the settings, defaults to
       `/etc/syslog.conf`."
   end
+
+  newparam(:lens) do
+    desc "The augeas lens used to parse the file"
+  end
 end

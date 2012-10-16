@@ -20,7 +20,9 @@ Puppet::Type.type(:syslog).provide(:augeas) do
   confine :exists => file
 
   def self.augopen(resource = nil)
-    AugeasProviders::Provider.augopen("Syslog.lns", file(resource))
+    lens = "Syslog.lns"
+    lens = resource[:lens] if resource and resource[:lens]
+    AugeasProviders::Provider.augopen(lens, file(resource))
   end
 
   def self.entry_path(resource)
