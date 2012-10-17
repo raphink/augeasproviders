@@ -17,7 +17,6 @@ Puppet::Type.type(:syslog).provide(:augeas) do
   end
 
   confine :feature => :augeas
-  confine :exists => file
 
   def self.augopen(resource = nil)
     lens = "Syslog.lns"
