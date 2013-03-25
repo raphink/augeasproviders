@@ -39,12 +39,6 @@ Puppet::Type.newtype(:sysctl) do
 
   newparam(:apply) do
     desc "Whether to apply the value using the sysctl command."
-
-    validate do |value|
-      unless value =~ /^(true|false)$/
-        raise ArgumentError, "Apply must be a boolean"
-      end
-    end
     defaultto(:true)
 
     munge do |value|
