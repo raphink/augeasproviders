@@ -14,6 +14,11 @@ describe provider_class do
     let(:tmptarget) { aug_fixture("empty") }
     let(:target) { tmptarget.path }
 
+    before :each do
+      Puppet::Type::Sysctl::ProviderAugeas.expects(:sysctl_get).with('net.ipv4.ip_forward').returns('1')
+      Puppet::Type::Sysctl::ProviderAugeas.expects(:sysctl_set).with('net.ipv4.ip_forward', '1').returns(nil)
+    end
+
     it "should create simple new entry" do
       apply!(Puppet::Type.type(:sysctl).new(
         :name     => "net.ipv4.ip_forward",
@@ -66,6 +71,8 @@ describe provider_class do
     end
 
     it "should create new entry next to commented out entry" do
+      Puppet::Type::Sysctl::ProviderAugeas.expects(:sysctl_get).with('net.bridge.bridge-nf-call-iptables').returns('1')
+      Puppet::Type::Sysctl::ProviderAugeas.expects(:sysctl_set).with('net.bridge.bridge-nf-call-iptables', '1').returns(nil)
       apply!(Puppet::Type.type(:sysctl).new(
         :name     => "net.bridge.bridge-nf-call-iptables",
         :value    => "1",
@@ -95,12 +102,13 @@ describe provider_class do
       end
     end
 
-    it "should update value" do
+    it "should update value with augeas" do
       apply!(Puppet::Type.type(:sysctl).new(
         :name     => "net.ipv4.ip_forward",
         :value    => "1",
         :target   => target,
-        :provider => "augeas"
+        :provider => "augeas",
+	:apply    => :false # Can't mock sysctl_get twice to ensure idempotency
       ))
 
       augparse_filter(target, "Sysctl.lns", "net.ipv4.ip_forward", '
