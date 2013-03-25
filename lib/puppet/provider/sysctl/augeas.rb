@@ -21,7 +21,7 @@ Puppet::Type.type(:sysctl).provide(:augeas) do
   end
 
   def self.sysctl_get(key)
-    sysctl(key).chomp[/=\s*(\S+)/, 1]
+    sysctl('-n', key).chomp
   end
 
   def self.file(resource = nil)
