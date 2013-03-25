@@ -8,6 +8,17 @@ Puppet::Type.newtype(:sysctl) do
 
   ensurable
 
+  def munge_boolean(value)
+    case value
+    when true, "true", :true
+      :true
+    when false, "false", :false
+      :false
+    else
+      fail("munge_boolean only takes booleans")
+    end
+  end
+
   newparam(:name) do
     desc "The name of the setting, e.g. net.ipv4.ip_forward"
     isnamevar
@@ -24,5 +35,20 @@ Puppet::Type.newtype(:sysctl) do
 
   newproperty(:comment) do
     desc "Text to be stored in a comment immediately above the entry.  It will be automatically prepended with the name of the setting in order for the provider to know whether it controls the comment or not."
+  end
+
+  newparam(:apply) do
+    desc "Whether to apply the value using the sysctl command."
+
+    validate do |value|
+      unless value =~ /^(true|false)$/
+        raise ArgumentError, "Apply must be a boolean"
+      end
+    end
+    defaultto(:true)
+
+    munge do |value|
+      @resource.munge_boolean(value)
+    end
   end
 end
