@@ -90,8 +90,8 @@ describe provider_class do
     end
 
     it "should create new entry next to commented out entry" do
-      Puppet::Type::Sysctl::ProviderAugeas.expects(:sysctl_get).with('net.bridge.bridge-nf-call-iptables').returns('1')
-      Puppet::Type::Sysctl::ProviderAugeas.expects(:sysctl_set).with('net.bridge.bridge-nf-call-iptables', '1').returns(nil)
+      provider_class.expects(:sysctl).with('-n', 'net.bridge.bridge-nf-call-iptables').returns('1')
+      provider_class.expects(:sysctl).with('-w', 'net.bridge.bridge-nf-call-iptables="1"')
       apply!(Puppet::Type.type(:sysctl).new(
         :name     => "net.bridge.bridge-nf-call-iptables",
         :value    => "1",
