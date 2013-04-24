@@ -15,6 +15,11 @@ describe provider_class do
     let(:target) { File.join(@tmpdir, "new_file") }
     after(:all) { FileUtils.remove_entry_secure @tmpdir }
 
+    before :each do
+      provider_class.expects(:sysctl).with('-w', 'net.ipv4.ip_forward="1"')
+      provider_class.expects(:sysctl).with('-n', 'net.ipv4.ip_forward').returns('1')
+    end
+
     it "should create simple new entry" do
       apply!(Puppet::Type.type(:sysctl).new(
         :name     => "net.ipv4.ip_forward",
