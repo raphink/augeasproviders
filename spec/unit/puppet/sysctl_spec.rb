@@ -132,7 +132,7 @@ describe provider_class do
             :value    => "1",
             :apply    => true,
             :target   => target,
-            :provider => "augeas",
+            :provider => "augeas"
           ))
 
           augparse_filter(target, "Sysctl.lns", "net.ipv4.ip_forward", '
@@ -153,7 +153,7 @@ describe provider_class do
             :value    => "1",
             :apply    => true,
             :target   => target,
-            :provider => "augeas",
+            :provider => "augeas"
           ))
 
           augparse_filter(target, "Sysctl.lns", "net.ipv4.ip_forward", '
@@ -175,7 +175,7 @@ describe provider_class do
             :value    => "1",
             :apply    => true,
             :target   => target,
-            :provider => "augeas",
+            :provider => "augeas"
           ))
 
           augparse_filter(target, "Sysctl.lns", "net.ipv4.ip_forward", '
