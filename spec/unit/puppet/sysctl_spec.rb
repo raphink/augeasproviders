@@ -34,8 +34,8 @@ describe provider_class do
     let(:target) { tmptarget.path }
 
     before :each do
-      Puppet::Type::Sysctl::ProviderAugeas.expects(:sysctl_get).with('net.ipv4.ip_forward').returns('1')
-      Puppet::Type::Sysctl::ProviderAugeas.expects(:sysctl_set).with('net.ipv4.ip_forward', '1').returns(nil)
+      provider_class.expects(:sysctl).with('-n', 'net.ipv4.ip_forward').returns('')
+      provider_class.expects(:sysctl).with('-w', 'net.ipv4.ip_forward="1"')
     end
 
     it "should create simple new entry" do

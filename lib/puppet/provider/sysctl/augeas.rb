@@ -148,7 +148,7 @@ Puppet::Type.type(:sysctl).provide(:augeas) do
       aug.set("#{path}/#{resource[:name]}", value)
       augsave!(aug)
       if resource[:apply] == :true
-        sysctl_set(resource[:name], resource[:value])
+        self.class.sysctl_set(resource[:name], resource[:value])
       end
     ensure
       aug.close if aug
