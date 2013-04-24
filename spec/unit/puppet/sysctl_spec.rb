@@ -122,12 +122,15 @@ describe provider_class do
     end
 
     it "should update value with augeas" do
+      provider_class.expects(:sysctl).with('-n', 'net.ipv4.ip_forward').once.returns('')
+      provider_class.expects(:sysctl).with('-w', 'net.ipv4.ip_forward="1"')
+      provider_class.expects(:sysctl).with('-n', 'net.ipv4.ip_forward').once.returns('1')
+
       apply!(Puppet::Type.type(:sysctl).new(
         :name     => "net.ipv4.ip_forward",
         :value    => "1",
         :target   => target,
         :provider => "augeas",
-        :apply    => :false # Can't mock sysctl_get twice to ensure idempotency
       ))
 
       augparse_filter(target, "Sysctl.lns", "net.ipv4.ip_forward", '
