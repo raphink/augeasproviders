@@ -1,4 +1,5 @@
 # Manages pg_hba entries
+require 'pathname'
 
 Puppet::Type.newtype(:pg_hba) do
   @doc = "Manages commands in pg_hba.conf."
@@ -77,7 +78,14 @@ Puppet::Type.newtype(:pg_hba) do
 
   newparam(:target) do
     isnamevar
+    isrequired
     desc "The file in which to the pg_hba rule"
+
+    validate do |value|
+      unless Pathname.new(value).absolute?
+        raise Puppet::Error, 'target must be an absolute path'
+      end
+    end
   end
 
   def self.title_patterns
