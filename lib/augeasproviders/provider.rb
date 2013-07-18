@@ -50,7 +50,7 @@ module AugeasProviders::Provider
     # @yieldparam [Augeas] aug open Augeas handle
     # @raise [Puppet::Error] if Augeas did not load the file
     # @api public
-    def augopen(resource = nil, autosave = false, &block)
+    def augopen(resource = nil, autosave = false, *args, &block)
       loadpath = AugeasProviders::Provider.loadpath
       file = target(resource)
       aug = nil
@@ -71,7 +71,7 @@ module AugeasProviders::Provider
 
         if block_given?
           setvars(aug, resource)
-          block.call(aug)
+          block.call(aug, *args)
         else
           aug
         end
@@ -100,8 +100,8 @@ module AugeasProviders::Provider
     # @yieldparam [Augeas] aug open Augeas handle
     # @raise [Puppet::Error] if Augeas did not load the file
     # @api public
-    def augopen!(resource = nil, &block)
-      augopen(resource, true, &block)
+    def augopen!(resource = nil, *args, &block)
+      augopen(resource, true, *args, &block)
     end
 
     # Saves all changes made in the current Augeas handle and checks for any
@@ -122,6 +122,30 @@ module AugeasProviders::Provider
           end
         end
         raise Augeas::Error, errors.join("\n")
+      end
+    end
+
+    # Define a method using augopen
+    #
+    # @param [Symbol] meth the name of the method to create
+    # @yield [aug] block that uses the Augeas handle
+    # @yieldparam [Augeas] aug open Augeas handle
+    # @api public
+    def define_augmethod(meth, resource = nil, &block)
+      define_method(meth) do
+        augopen(resource, &block)
+      end
+    end
+  
+    # Define a method using augopen!
+    #
+    # @param [Symbol] meth the name of the method to create
+    # @yield [aug] block that uses the Augeas handle
+    # @yieldparam [Augeas] aug open Augeas handle
+    # @api public
+    def define_augmethod!(meth, resource = nil, &block)
+      define_method(meth) do |*args|
+        augopen!(resource, *args, &block)
       end
     end
 
@@ -323,7 +347,7 @@ module AugeasProviders::Provider
   # returned and the caller is responsible for closing it to free resources.
   #
   # @return [Augeas] Augeas handle if no block is given
-  # @yield [aug,path] block that uses the Augeas handle
+  # @yield [aug] block that uses the Augeas handle
   # @yieldparam [Augeas] aug open Augeas handle
   # @raise [Puppet::Error] if Augeas did not load the file
   # @api public
@@ -340,7 +364,7 @@ module AugeasProviders::Provider
   # returned and the caller is responsible for closing it to free resources.
   #
   # @return [Augeas] Augeas handle if no block is given
-  # @yield [aug,path] block that uses the Augeas handle
+  # @yield [aug] block that uses the Augeas handle
   # @yieldparam [Augeas] aug open Augeas handle
   # @raise [Puppet::Error] if Augeas did not load the file
   # @api public
@@ -356,6 +380,26 @@ module AugeasProviders::Provider
   # @api public
   def augsave!(aug)
     self.class.augsave!(aug)
+  end
+
+  # Define a method using augopen
+  #
+  # @param [Symbol] meth the name of the method to create
+  # @yield [aug] block that uses the Augeas handle
+  # @yieldparam [Augeas] aug open Augeas handle
+  # @api public
+  def define_augmethod(meth, &block)
+    self.class.define_augmethod(meth, self.resource, &block)
+  end
+
+  # Define a method using augopen!
+  #
+  # @param [Symbol] meth the name of the method to create
+  # @yield [aug] block that uses the Augeas handle
+  # @yieldparam [Augeas] aug open Augeas handle
+  # @api public
+  def define_augmethod!(meth, &block)
+    self.class.define_augmethod!(meth, self.resource, &block)
   end
 
   # Wrapper around Augeas#label for older versions of Augeas
