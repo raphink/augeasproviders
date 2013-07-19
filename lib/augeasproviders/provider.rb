@@ -132,8 +132,8 @@ module AugeasProviders::Provider
     # @yieldparam [Augeas] aug open Augeas handle
     # @api public
     def define_augmethod(meth, resource = nil, &block)
-      define_method(meth) do
-        augopen(resource, &block)
+      define_method(meth) do |*args|
+        augopen(resource, false, *args, &block)
       end
     end
   
@@ -145,7 +145,7 @@ module AugeasProviders::Provider
     # @api public
     def define_augmethod!(meth, resource = nil, &block)
       define_method(meth) do |*args|
-        augopen!(resource, *args, &block)
+        augopen!(resource, true, *args, &block)
       end
     end
 
