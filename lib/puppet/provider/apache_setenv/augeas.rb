@@ -58,11 +58,11 @@ Puppet::Type.type(:apache_setenv).provide(:augeas) do
     end
   end
 
-  define_augmethod(:value) do |aug|
+  define_augmethod(:value) do |aug, resource|
     aug.get('$resource[last()]/arg[2]') || ''
   end
 
-  define_augmethod!(:value=) do |aug, value|
+  define_augmethod!(:value=) do |aug, resource, value|
     # Get last path, then remove the rest
     val_path = '$resource[last()]/arg[2]'
     if resource[:value].nil? || resource[:value].empty?
