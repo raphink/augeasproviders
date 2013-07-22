@@ -40,11 +40,5 @@ Puppet::Type.type(:nrpe_command).provide(:augeas) do
     aug.rm("$target/command[#{resource[:name]}]")
   end
 
-  define_augmethod(:command) do |aug, resource|
-    aug.get('$resource')
-  end
-
-  define_augmethod!(:command=) do |aug, resource, value|
-    aug.set('$resource', value)
-  end
+  define_property(:command, :label => :resource)
 end

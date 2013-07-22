@@ -181,7 +181,7 @@ module AugeasProviders::Provider
     #
     # @param [String] name the name of the property
     # @param [Hash] opts the options to create the setter
-    # @option opts [String] label when not passing a block, the optional label to use for automatic getter definition
+    # @option opts [String] label when not passing a block, the optional label to use for automatic getter definition. When the value is `:resource`, `$resource` will be used as the path to the node. If no label is passed, it defaults to the property name.
     # @option opts [String] default when not passing a block, the optional default value for automatic getter definition
     # @option opts [Symbol] type when not passing a block, the type of value to set
     # @option opts [String] sublabel when not passing a block, the optional sublabel for automatic getter definition of a hash value
@@ -192,7 +192,7 @@ module AugeasProviders::Provider
       type = opts[:type] || :string
       sublabel = opts[:sublabel] || nil
 
-      rpath = label.nil? ? '$resource' : "$resource/#{label}"
+      rpath = label == :resource ? '$resource' : "$resource/#{label}"
 
       # Class getter method using an existing aug handler
       # FIXME: we're sending to the wrong class (but it works)
@@ -240,7 +240,7 @@ module AugeasProviders::Provider
     #
     # @param [String] name the name of the property
     # @param [Hash] opts the options to create the setter
-    # @option opts [String] label when not passing a block, the optional label to use for automatic getter definition
+    # @option opts [String] label when not passing a block, the optional label to use for automatic getter definition. When the value is `:resource`, `$resource` will be used as the path to the node. If no label is passed, it defaults to the property name.
     # @option opts [String] default when not passing a block, the optional default value for automatic getter definition
     # @option opts [Symbol] type when not passing a block, the type of value to set
     # @option opts [String] sublabel when not passing a block, the optional sublabel for automatic getter definition of a hash value
@@ -253,7 +253,7 @@ module AugeasProviders::Provider
       sublabel = opts[:sublabel] || nil
       purge_ident = opts[:purge_ident] || false
 
-      rpath = label.nil? ? '$resource' : "$resource/#{label}"
+      rpath = label == :resource ? '$resource' : "$resource/#{label}"
 
       # Class setter method using an existing aug handler
       # FIXME: we're sending to the wrong class (but it works)
