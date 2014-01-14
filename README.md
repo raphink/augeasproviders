@@ -1,5 +1,7 @@
 # augeasproviders: alternative Augeas-based providers for Puppet
 
+this is a test
+
 This module provides alternative providers for core Puppet types such as
 `host` and `mailalias` using the Augeas configuration library.  It also adds
 some of its own types for new functionality.
