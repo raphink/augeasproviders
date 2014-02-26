@@ -26,6 +26,34 @@ Puppet::Type.type(:shellvar).provide(:augeas) do
     Puppet::Util::Package.versioncmp(aug_version, '1.2.0') >= 0
   end
 
+  def unset_path
+    if unset_seq?
+      "$target/@unset/*[.='#{resource[:variable]}']"
+    else
+      "$target/@unset[.='#{resource[:variable]}']"
+    end
+  end
+
+  def unset_ins_path
+    if unset_seq?
+      "$target/@unset[*='#{resource[:variable]}']"
+    else
+      "$target/@unset[.='#{resource[:variable]}']"
+    end
+  end
+
+  def unset_empty
+    if unset_seq?
+      "$target/@unset[count(*)=0]/1"
+    else
+      "$target/@unset[.='']"
+    end
+  end
+
+  def unset_purge(aug)
+    aug.rm("$target/@unset[count(*)=0]") if unset_seq?
+  end
+
   def is_array?(path=nil, aug=nil)
     if aug.nil? || path.nil?
       augopen do |aug|
@@ -54,18 +82,11 @@ Puppet::Type.type(:shellvar).provide(:augeas) do
 
   def export
     augopen! do |aug|
-      if unset_seq?
-        unset_ins_path = "$target/@unset[*='#{resource[:variable]}']"
-        unset_rm_path = "$target/@unset/*[.='#{resource[:variable]}']"
-      else
-        unset_ins_path = "$target/@unset[.='#{resource[:variable]}']"
-        unset_rm_path = unset_ins_path
-      end
       unless aug.match(unset_ins_path).empty?
         aug.insert(unset_ins_path, resource[:variable], false)
         set_values('$target', aug, resource[:value])
-        aug.rm(unset_rm_path)
-        aug.rm("$target/@unset[count(*)=0]") if unset_seq?
+        aug.rm(unset_path)
+        unset_purge(aug)
       end
       aug.clear("$target/#{resource[:variable]}/export")
     end
@@ -74,11 +95,7 @@ Puppet::Type.type(:shellvar).provide(:augeas) do
   def unset
     augopen! do |aug|
       aug.insert("$target/#{resource[:variable]}", '@unset', false)
-      if unset_seq?
-        aug.set("$target/@unset[count(*)=0]/1", resource[:variable])
-      else
-        aug.set("$target/@unset[.='']", resource[:variable])
-      end
+      aug.set(unset_empty, resource[:variable])
       aug.rm("$target/#{resource[:variable]}")
     end
   end
@@ -93,17 +110,10 @@ Puppet::Type.type(:shellvar).provide(:augeas) do
 
   def ununset
     augopen! do |aug|
-      if unset_seq?
-        unset_ins_path = "$target/@unset[*='#{resource[:variable]}']"
-        unset_rm_path = "$target/@unset/*[.='#{resource[:variable]}']"
-      else
-        unset_ins_path = "$target/@unset[.='#{resource[:variable]}']"
-        unset_rm_path = unset_ins_path
-      end
       aug.insert(unset_ins_path, resource[:variable], false)
       set_values('$target', aug, resource[:value])
-      aug.rm(unset_rm_path)
-      aug.rm("$target/@unset[count(*)=0]") if unset_seq?
+      aug.rm(unset_path)
+      unset_purge(aug)
     end
   end
 
@@ -156,17 +166,15 @@ Puppet::Type.type(:shellvar).provide(:augeas) do
       comment_ins = '$resource'
 
       if resource[:ensure] == :unset
-        unset_path = "[.='']"
         if unset_seq?
           comment_ins = '$resource/..'
-          unset_path = "[count(*)=0]/1"
         end
 
         unless commented.empty?
           aug.insert(commented.first, '@unset', false)
           aug.rm(commented.first) if resource[:uncomment] == :true
         end
-        aug.set("$target/@unset#{unset_path}", resource[:variable])
+        aug.set(unset_empty, resource[:variable])
       else
         unless commented.empty?
           aug.insert(commented.first, resource[:name], false)
@@ -202,12 +210,8 @@ Puppet::Type.type(:shellvar).provide(:augeas) do
       after_comment = after_comment_node(resource)
       aug.rm("$target/#comment[following-sibling::*[1][self::#{after_comment}]][. =~ regexp('#{resource[:variable]}:.*')]")
       aug.rm("$target/#{resource[:variable]}")
-      if unset_seq?
-        aug.rm("$target/@unset/*[.='#{resource[:variable]}']")
-        aug.rm("$target/@unset[count(*)=0]")
-      else
-        aug.rm("$target/@unset[.='#{resource[:variable]}']")
-      end
+      aug.rm(unset_path)
+      unset_purge(aug)
     end
   end
 
