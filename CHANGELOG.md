@@ -1,5 +1,33 @@
 # Changelog
 
+## 1.1.0
+
+- General
+    * add development doc
+    * test actual versions of Augeas in Travis CI
+    * improve errors when loading and saving files
+    * reorganize unit tests
+    * add augeasproviders::instances class, fixes #78
+
+- API
+    * add parsed_as? method
+    * add aug_version method
+    * add supported? method
+    * add rm_node to accessors
+    * share an Augeas handler on Puppet 3.4+
+
+- Providers
+    * do not confine providers to the existence of target files
+    * apache_directive: new type/provider
+    * pam: new type/provider
+    * shellvar: add unset and exported values for :ensure
+                add an :uncomment param
+                add an :array_append parameter
+    * sshd_config: support case_insensitive entries
+                   ensure that Port is inserted before ListenAddress, fixes #68
+    * sshd_config_subsystem: support case_insensitive entries
+
+
 ## 1.0.2
 * no change, re-release for bad tarball checksum
 
