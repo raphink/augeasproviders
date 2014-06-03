@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.1
+
+- General
+    * add a new next_seq method to fix use of seq entries
+      with Puppet 3.4 optimisation, fixes #101 and #106
+
+- Providers
+    * pam: override self.target properly, fixes #105
+
 ## 1.1.0
 
 - General
